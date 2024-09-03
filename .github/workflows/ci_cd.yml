@@ -23,7 +23,7 @@ jobs:
       SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
       ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT }}  # Retrieve the environment input
       SNOWSQL_DATABASE: DB_DEV         # Combine DB_ prefix with the environment
-      SNOWSQL_SCHEMA: MY_SCHEMA
+      SNOWSQL_SCHEMA: "MY_SCHEMA"
 
     steps:
       - name: Checkout repository
