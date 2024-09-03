@@ -35,7 +35,7 @@ jobs:
           SNOWSQL_DEST=~/bin SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.9-linux_x86_64.bash
 
       - name: Set SNOWSQL_DATABASE Environment Variable
-        run: echo "SNOWSQL_DATABASE=DB_${{ github.event.inputs.ENVIRONMENT }}" >> $GITHUB_ENV
+        run: echo "SNOWSQL_DATABASE=DB_DEV >> $GITHUB_ENV
 
       - name: Test SnowSQL Installation
         run: |
