@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'db'
+      - '.github/workflows/ci_cd.yml'
   workflow_dispatch:
     inputs:
       ENVIRONMENT:
@@ -33,10 +34,14 @@ jobs:
           curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.9-linux_x86_64.bash
           SNOWSQL_DEST=~/bin SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.9-linux_x86_64.bash
 
+      - name: Set SNOWSQL_DATABASE Environment Variable
+        run: echo "SNOWSQL_DATABASE=DB_${{ github.event.inputs.ENVIRONMENT }}" >> $GITHUB_ENV
+
       - name: Test SnowSQL Installation
         run: |
-          echo "Using Database: $SNOWSQL_DATABASE"       # Just to verify the database being used
+          echo "Using Database: $SNOWSQL_DATABASE"
           ~/bin/snowsql
+
       - name: Create Stage
         run: |
           ~/bin/snowsql -a $SNOWSQL_ACCOUNT -u $SNOWSQL_USER -p $SNOWSQL_PWD \
