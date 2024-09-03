@@ -1,0 +1,31 @@
+name: Workflow to Deploy SAP_BRONZE Schema Objects
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'db'
+  workflow_dispatch:
+
+jobs:
+  TEST:
+    runs-on: ubuntu-latest
+
+    env:
+      SNOWSQL_PWD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+      SNOWSQL_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install SnowSQL
+        run: |
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.9-linux_x86_64.bash
+          SNOWSQL_DEST=~/bin SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.9-linux_x86_64.bash
+
+      - name: test
+        run: |
+          ~/bin/snowsql
