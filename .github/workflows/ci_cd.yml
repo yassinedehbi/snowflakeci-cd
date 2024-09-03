@@ -12,7 +12,7 @@ on:
       ENVIRONMENT:
         description: 'Environment to deploy to (e.g., DEV, PROD)'
         required: true
-        default: 'DB_DEV'
+        default: 'DEV'
 jobs:
   TEST:
     runs-on: ubuntu-latest
@@ -22,7 +22,7 @@ jobs:
       SNOWSQL_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
       ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT }}  # Retrieve the environment input
-      SNOWSQL_DATABASE: ${{ github.event.inputs.ENVIRONMENT }}       # Combine DB_ prefix with the environment
+      SNOWSQL_DATABASE: DB_${{ github.event.inputs.ENVIRONMENT }}       # Combine DB_ prefix with the environment
       SNOWSQL_SCHEMA: "MYSCHEMA"
 
     steps:
