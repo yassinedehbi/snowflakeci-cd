@@ -22,7 +22,7 @@ jobs:
       SNOWSQL_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
       ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT }}  # Retrieve the environment input
-      SNOWSQL_DATABASE: DB_DEV         # Combine DB_ prefix with the environment
+      SNOWSQL_DATABASE: DB_PRD         # Combine DB_ prefix with the environment
       SNOWSQL_SCHEMA: "MYSCHEMA"
 
     steps:
@@ -42,6 +42,8 @@ jobs:
           echo "Using Database: $SNOWSQL_DATABASE"
           ~/bin/snowsql
 
-      - name: Create Stage
-        run: |
-          ~/bin/snowsql -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -q "CREATE OR REPLACE STAGE my_stage;"
+      # - name: Create Stage
+      #   run: |
+      #     ~/bin/snowsql -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -q "CREATE OR REPLACE STAGE my_stage;"
+      - name: ci-objects
+        run: find 'db' -type f -exec ~/bin/snowsql -f {} -d $SNOWSQL_DATABASE -q
