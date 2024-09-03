@@ -1,0 +1,1 @@
+create view myview1 as select * from MYTABLE1
