@@ -7,7 +7,11 @@ on:
     paths:
       - 'db'
   workflow_dispatch:
-
+    inputs:
+      ENVIRONMENT:
+        description: 'Environment to deploy to (e.g., DEV, PROD)'
+        required: true
+        default: 'DEV'
 jobs:
   TEST:
     runs-on: ubuntu-latest
@@ -16,6 +20,9 @@ jobs:
       SNOWSQL_PWD: ${{ secrets.SNOWFLAKE_PASSWORD }}
       SNOWSQL_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
+      ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT }}  # Retrieve the environment input
+      SNOWSQL_DATABASE: DB_${{ env.ENVIRONMENT }}          # Combine DB_ prefix with the environment
+      SNOWSQL_SCHEMA: MY_SCHEMA
 
     steps:
       - name: Checkout repository
@@ -26,6 +33,11 @@ jobs:
           curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.9-linux_x86_64.bash
           SNOWSQL_DEST=~/bin SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.9-linux_x86_64.bash
 
-      - name: test
+      - name: Test SnowSQL Installation
         run: |
+          echo "Using Database: $SNOWSQL_DATABASE"       # Just to verify the database being used
           ~/bin/snowsql
+      - name: Create Stage
+        run: |
+          ~/bin/snowsql -a $SNOWSQL_ACCOUNT -u $SNOWSQL_USER -p $SNOWSQL_PWD \
+            -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -q "CREATE OR REPLACE STAGE my_stage;"
