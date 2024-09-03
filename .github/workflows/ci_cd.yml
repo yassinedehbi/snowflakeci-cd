@@ -44,5 +44,4 @@ jobs:
 
       - name: Create Stage
         run: |
-          ~/bin/snowsql -a $SNOWSQL_ACCOUNT -u $SNOWSQL_USER -p $SNOWSQL_PWD \
-            -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -q "CREATE OR REPLACE STAGE my_stage;"
+          ~/bin/snowsql -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -q "CREATE OR REPLACE STAGE my_stage;"
