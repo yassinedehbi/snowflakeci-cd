@@ -1,4 +1,4 @@
-name: Workflow to Deploy SAP_BRONZE Schema Objects
+name: Workflow to test tables/views deployment
 
 on:
   push:
