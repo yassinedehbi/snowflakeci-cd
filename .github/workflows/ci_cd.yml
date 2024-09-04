@@ -49,7 +49,7 @@ jobs:
       - name: Execute all DDL scripts for Views
         run: |
           # Then, execute all view creation scripts
-          for file in $(find db/ -type f -path "*/Views/*.sql"); do
+          for file in $(find db/ -type f -path "*/views/*.sql"); do
             echo "Executing View script: $file"
             ~/bin/snowsql -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -f "$file"
           done
