@@ -39,14 +39,15 @@ jobs:
           echo "Using Database: $SNOWSQL_DATABASE"
           ~/bin/snowsql
 
-      - name: Execute all scripts :)
+      - name: Execute all DDL scripts for Tables
         run: |
           # First, execute all table creation scripts
           for file in $(find db/ -type f -path "*/Tables/*.sql"); do
             echo "Executing Table script: $file"
             ~/bin/snowsql -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -f "$file"
           done
-
+      - name: Execute all DDL scripts for Views
+        run: |
           # Then, execute all view creation scripts
           for file in $(find db/ -type f -path "*/Views/*.sql"); do
             echo "Executing View script: $file"
