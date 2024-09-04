@@ -41,7 +41,14 @@ jobs:
 
       - name: Execute all scripts :)
         run: |
-          for file in $(find db/ -type f -name "*.sql"); do
-            echo "Executing $file"
+          # First, execute all table creation scripts
+          for file in $(find db/ -type f -path "*/Tables/*.sql"); do
+            echo "Executing Table script: $file"
+            ~/bin/snowsql -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -f "$file"
+          done
+
+          # Then, execute all view creation scripts
+          for file in $(find db/ -type f -path "*/Views/*.sql"); do
+            echo "Executing View script: $file"
             ~/bin/snowsql -d $SNOWSQL_DATABASE -s $SNOWSQL_SCHEMA -f "$file"
           done
