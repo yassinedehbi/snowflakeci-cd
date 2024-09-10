@@ -1,1 +1,1 @@
-create or replace view myview1 as select * from MYTABLE1
+create or replace view db_{{enviroment}}.myschema.myview1 as select * from MYTABLE1
