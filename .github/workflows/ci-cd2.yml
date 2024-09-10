@@ -33,9 +33,9 @@ jobs:
           # SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
           # SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE}}
         run: |
-          snow sql -q "ALTER GIT REPOSITORY quickstart_common.public.quickstart_repo FETCH" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
+          snow sql -q "ALTER GIT REPOSITORY db_dev.utils.git_repo_stage FETCH" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
           # --role $SNOWFLAKE_ROLE 
           # --warehouse $SNOWFLAKE_WAREHOUSE
-          snow sql -q "EXECUTE IMMEDIATE FROM @quickstart_common.public.quickstart_repo/branches/main/deploy_parameterized_pipeline.sql USING (environment => 'prod', retention_time => 1)" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
+          snow sql -q "EXECUTE IMMEDIATE FROM @db_dev.utils.git_repo_stage/branches/main/db/myschema/Tables/mytable1.sql USING (environment => 'prod', retention_time => 1)" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
           # --role $SNOWFLAKE_ROLE 
           # --warehouse $SNOWFLAKE_WAREHOUSE
