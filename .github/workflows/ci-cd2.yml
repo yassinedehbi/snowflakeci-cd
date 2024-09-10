@@ -8,6 +8,11 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      ENVIRONMENT:
+        description: 'Environment to deploy to (e.g., DEV, PROD)'
+        required: true
+        default: 'DEV'
 
 jobs:
   deploy:
@@ -32,13 +37,14 @@ jobs:
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
           # SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
           # SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE}}
+          ENVIRONMENT: ${{github.event.inputs.ENVIRONMENT}}
         run: |
           snow sql -q "ALTER GIT REPOSITORY db_dev.utils.git_repo_stage FETCH" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
           # --role $SNOWFLAKE_ROLE 
           # --warehouse $SNOWFLAKE_WAREHOUSE
           for file in $(find db/ -type f -path "*/Tables/*.sql"); do
             echo "Executing Table script: $file"
-            snow sql -q "EXECUTE IMMEDIATE FROM @db_dev.utils.git_repo_stage/branches/main/db/myschema/Tables/$file USING (environment => 'prod', retention_time => 1)" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
+            snow sql -q "EXECUTE IMMEDIATE FROM @db_dev.utils.git_repo_stage/branches/main/$file USING (environment => $ENVIRONMENT, retention_time => 1)" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
           done
           
           # --role $SNOWFLAKE_ROLE 
