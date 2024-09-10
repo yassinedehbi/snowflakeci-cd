@@ -36,6 +36,10 @@ jobs:
           snow sql -q "ALTER GIT REPOSITORY db_dev.utils.git_repo_stage FETCH" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
           # --role $SNOWFLAKE_ROLE 
           # --warehouse $SNOWFLAKE_WAREHOUSE
-          snow sql -q "EXECUTE IMMEDIATE FROM @db_dev.utils.git_repo_stage/branches/main/db/myschema/Tables/mytable1.sql USING (environment => 'prod', retention_time => 1)" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
+          for file in $(find db/ -type f -path "*/Tables/*.sql"); do
+            echo "Executing Table script: $file"
+            snow sql -q "EXECUTE IMMEDIATE FROM @db_dev.utils.git_repo_stage/branches/main/db/myschema/Tables/$file USING (environment => 'prod', retention_time => 1)" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
+          done
+          
           # --role $SNOWFLAKE_ROLE 
           # --warehouse $SNOWFLAKE_WAREHOUSE
