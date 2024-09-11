@@ -10,7 +10,7 @@ on:
       ENVIRONMENT:
         description: 'Environment to deploy to (e.g., DEV, PROD)'
         required: false
-        default: 'DEV'  # Default for manual runs
+        default: "'DEV'"  # Default for manual runs with quotes
 
 jobs:
   deploy:
@@ -31,11 +31,11 @@ jobs:
       # Set environment based on the trigger type
       - name: Set environment for push to main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
+        run: echo "ENVIRONMENT='PROD'" >> $GITHUB_ENV
 
       - name: Set environment for workflow_dispatch
         if: github.event_name == 'workflow_dispatch'
-        run: echo "ENVIRONMENT=${{ github.event.inputs.ENVIRONMENT || 'DEV' }}" >> $GITHUB_ENV
+        run: echo "ENVIRONMENT=${{ github.event.inputs.ENVIRONMENT || '\'DEV\'' }}" >> $GITHUB_ENV
 
       - name: Deploy data pipeline
         env:
