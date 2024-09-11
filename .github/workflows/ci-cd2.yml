@@ -1,18 +1,16 @@
 name: Deploy data pipeline to prod
 
-# Controls when the action will run.
 on:
   push:
     branches:
       - main
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       ENVIRONMENT:
         description: 'Environment to deploy to (e.g., DEV, PROD)'
-        required: true
-        default: '''DEV'''
+        required: false
+        default: 'DEV'  # Default for manual runs
 
 jobs:
   deploy:
@@ -36,8 +34,8 @@ jobs:
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
           # SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-          # SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE}}
-          ENVIRONMENT: ${{github.event.inputs.ENVIRONMENT}}
+          # SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          ENVIRONMENT: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' ? 'PROD' : github.event.inputs.ENVIRONMENT || 'DEV' }}
         run: |
           snow sql -q "ALTER GIT REPOSITORY db_dev.utils.git_repo_stage FETCH" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
           # --role $SNOWFLAKE_ROLE 
