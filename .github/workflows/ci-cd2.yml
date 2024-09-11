@@ -28,22 +28,23 @@ jobs:
       - name: Install Python packages
         run: pip install snowflake-cli-labs
 
+      # Set environment based on the trigger type
+      - name: Set environment for push to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
+
+      - name: Set environment for workflow_dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "ENVIRONMENT=${{ github.event.inputs.ENVIRONMENT || 'DEV' }}" >> $GITHUB_ENV
+
       - name: Deploy data pipeline
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-          # SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-          # SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-          ENVIRONMENT: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' ? 'PROD' : github.event.inputs.ENVIRONMENT || 'DEV' }}
         run: |
           snow sql -q "ALTER GIT REPOSITORY db_dev.utils.git_repo_stage FETCH" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
-          # --role $SNOWFLAKE_ROLE 
-          # --warehouse $SNOWFLAKE_WAREHOUSE
           for file in $(find db/ -type f -path "*/Tables/*.sql"); do
             echo "Executing Table script: $file"
             snow sql -q "EXECUTE IMMEDIATE FROM @db_dev.utils.git_repo_stage/branches/main/$file USING (environment => $ENVIRONMENT, retention_time => 1)" --temporary-connection --account $SNOWFLAKE_ACCOUNT --user $SNOWFLAKE_USER 
           done
-          
-          # --role $SNOWFLAKE_ROLE 
-          # --warehouse $SNOWFLAKE_WAREHOUSE
