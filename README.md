@@ -1,2 +1,2 @@
 ﻿# snowflakeci-cd
-** Create or alter:
+* Create or alter:
